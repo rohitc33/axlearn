@@ -279,7 +279,7 @@ def main():
     loaded_values = load_model(ckpt_path=args.ckpt_path)
     
     print(f"✅ Successfully loaded model from {args.ckpt_path}")
-    print(f"   Total parameters: {sum(x.size for x in preloaded_values):,}")
+    print(f"   Total parameters: {sum(x.size for x in loaded_values):,}")
 
 
 if __name__ == "__main__":
