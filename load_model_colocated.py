@@ -6,7 +6,7 @@ This script reads the checkpoint index to determine the model structure and crea
 appropriate TensorSpec objects for preloading.
 
 Usage:
-    python preload_model_script.py --ckpt_path gs://your-bucket/path/to/checkpoint
+    python load_model_colocated.py --ckpt_path gs://your-bucket/path/to/checkpoint
 """
 
 import argparse
@@ -224,7 +224,7 @@ def create_checkpoint_spec_from_state(ckpt_dir: str, state_spec: dict):
     return tensorstore_specs, shardings, shapes, dtypes
 
 
-def preload_model(ckpt_path: str):
+def load_model(ckpt_path: str):
     """Main function to preload a model from GCS checkpoint."""
     step = parse_step_from_dir(ckpt_path)
     print(f"Starting model preload from: {ckpt_path} (step {step})")
@@ -254,6 +254,14 @@ def preload_model(ckpt_path: str):
         print(f"Preload completed in {preload_time:.2f} seconds")
         print(f"Preloaded {len(preloaded_values)} arrays")
 
+        print("Transferring arrays to TPU...")
+        start_time = time.perf_counter()
+        restored_values = [
+            jax.device_put(v, s) for v, s in zip(preloaded_values, shardings)
+        ]
+        transfer_time = time.perf_counter() - start_time
+        print(f"Transfer completed in {transfer_time:.2f} seconds")
+
         return preloaded_values
 
 
@@ -268,9 +276,9 @@ def main():
     
     print(f"JAX devices: {jax.devices()}")
     
-    preloaded_values = preload_model(ckpt_path=args.ckpt_path)
+    loaded_values = load_model(ckpt_path=args.ckpt_path)
     
-    print(f"✅ Successfully preloaded model from {args.ckpt_path}")
+    print(f"✅ Successfully loaded model from {args.ckpt_path}")
     print(f"   Total parameters: {sum(x.size for x in preloaded_values):,}")
 
 
