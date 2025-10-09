@@ -36,7 +36,7 @@ core = [
     # This has both x86 and arm64 wheels. Underneath the hood it uses tensorflow-macos since 2.13.
     "tensorflow==2.19.1",
     "tensorflow-datasets>=4.9.2",
-    "tensorflow-io>=0.37.2",  # for tensorflow-2.16. Note that 0.37.0 results in "pure virtual method called".
+    "tensorflow-io>=0.37.1",  # for tensorflow-2.16. Note that 0.37.0 results in "pure virtual method called".
     "tensorflow-metadata>=1.0.0", # Otherwise Seqio will report no core for tfds
     "tensorflow_text==2.19.0", # implied by seqio, but also used directly for text processing
     "tensorstore>=0.1.63",  # used for supporting GDA checkpoints
