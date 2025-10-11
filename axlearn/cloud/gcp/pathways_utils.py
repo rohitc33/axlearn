@@ -87,9 +87,9 @@ _PATHWAYS_BACK_OFF_LIMIT = 32
 
 FLAGS = flags.FLAGS
 
-def get_colocated_python_image(colocated_image_name, fv: flags.FlagValues = FLAGS) -> str:
+def get_colocated_python_image(name, fv: flags.FlagValues = FLAGS) -> str:
     repo = gcp_settings("docker_repo", required=False, fv=fv)
-    return repo+"/"+colocated_image_name+":"+colocated_image_name
+    return repo + "/" + _COLOCATED_PYTHON_SIDECAR_NAME + ":" + name
 
 
 def parse_xla_flag_value(value: str) -> Union[int, bool, str]:
@@ -454,7 +454,7 @@ class PathwaysReplicatedJob(BaseReplicatedJob):
         cfg: PathwaysReplicatedJob.Config = self.config
         return dict(
             name=_COLOCATED_PYTHON_SIDECAR_NAME,
-            image=get_colocated_python_image(cfg.colocated_image),
+            image=get_colocated_python_image(cfg.name),
             restartPolicy="Always",
             env=[
                 {
